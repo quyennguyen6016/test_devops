@@ -81,6 +81,22 @@ jobs:
       - name: Lint backend
         run: node --check src/server.js
 
+      - name: Prepare test database
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d orders_test -c "
+          CREATE TABLE IF NOT EXISTS orders (
+            id SERIAL PRIMARY KEY,
+            customer_name VARCHAR(100) NOT NULL,
+            phone VARCHAR(20),
+            product_name VARCHAR(150) NOT NULL,
+            quantity INTEGER NOT NULL DEFAULT 1,
+            total_price DECIMAL(10,2) NOT NULL,
+            status VARCHAR(30) NOT NULL DEFAULT 'pending',
+            note TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+          );"
+
       - name: Test backend
         run: npm test
 
